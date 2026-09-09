@@ -43,6 +43,16 @@ public class SchemaCreation {
                     "FOREIGN KEY (floor_id) REFERENCES Floor(id) ON DELETE CASCADE" +
                     ")";
 
+    private static final String CREATE_TENANT_TABLE =
+            "CREATE TABLE IF NOT EXISTS Tenant (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY," +
+                    "first_name VARCHAR(100) NOT NULL," +
+                    "last_name VARCHAR(100) NOT NULL," +
+                    "email VARCHAR(255) NOT NULL," +
+                    "phone VARCHAR(50)," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                    ")";
+
     public static void initializeSchema() {
         try (Connection conn = ConnectionManager.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -51,6 +61,7 @@ public class SchemaCreation {
             stmt.execute(CREATE_BUILDING_TABLE);
             stmt.execute(CREATE_FLOOR_TABLE);
             stmt.execute(CREATE_UNIT_TABLE);
+            stmt.execute(CREATE_TENANT_TABLE);
 
             System.out.println("Schema verified/created successfully.");
 
@@ -58,4 +69,6 @@ public class SchemaCreation {
             throw new RuntimeException("Failed to initialize database schema.", e);
         }
     }
+
+
 }

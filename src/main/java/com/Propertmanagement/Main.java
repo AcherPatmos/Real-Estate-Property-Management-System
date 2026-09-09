@@ -12,7 +12,9 @@ import com.Propertmanagement.model.Unit;
 
 import java.math.BigDecimal;
 
-public class Main {
+public class
+
+Main {
 
     public static void main(String[] args) {
 
