@@ -52,6 +52,19 @@ public class SchemaCreation {
                     "phone VARCHAR(50)," +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                     ")";
+    private static final String CREATE_LEASE_TABLE =
+            "CREATE TABLE IF NOT EXISTS Lease (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY," +
+                    "tenant_id INT NOT NULL," +
+                    "unit_id INT NOT NULL," +
+                    "start_date DATE NOT NULL," +
+                    "end_date DATE NOT NULL," +
+                    "monthly_rent DECIMAL(10,2) NOT NULL," +
+                    "status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE'," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY (tenant_id) REFERENCES Tenant(id) ON DELETE CASCADE," +
+                    "FOREIGN KEY (unit_id) REFERENCES Unit(id) ON DELETE CASCADE" +
+                    ")";
 
     public static void initializeSchema() {
         try (Connection conn = ConnectionManager.getConnection();
@@ -62,6 +75,8 @@ public class SchemaCreation {
             stmt.execute(CREATE_FLOOR_TABLE);
             stmt.execute(CREATE_UNIT_TABLE);
             stmt.execute(CREATE_TENANT_TABLE);
+            stmt.execute(CREATE_LEASE_TABLE);
+
 
             System.out.println("Schema verified/created successfully.");
 
