@@ -66,6 +66,17 @@ public class SchemaCreation {
                     "FOREIGN KEY (unit_id) REFERENCES Unit(id) ON DELETE CASCADE" +
                     ")";
 
+    private static final String CREATE_PAYMENT_TABLE =
+            "CREATE TABLE IF NOT EXISTS Payment (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY," +
+                    "lease_id INT NOT NULL," +
+                    "amount DECIMAL(10,2) NOT NULL," +
+                    "payment_date DATE NOT NULL," +
+                    "method VARCHAR(50)," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY (lease_id) REFERENCES Lease(id) ON DELETE CASCADE" +
+                    ")";
+
     public static void initializeSchema() {
         try (Connection conn = ConnectionManager.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -76,6 +87,7 @@ public class SchemaCreation {
             stmt.execute(CREATE_UNIT_TABLE);
             stmt.execute(CREATE_TENANT_TABLE);
             stmt.execute(CREATE_LEASE_TABLE);
+            stmt.execute(CREATE_PAYMENT_TABLE);
 
 
             System.out.println("Schema verified/created successfully.");
