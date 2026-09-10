@@ -77,6 +77,36 @@ public class SchemaCreation {
                     "FOREIGN KEY (lease_id) REFERENCES Lease(id) ON DELETE CASCADE" +
                     ")";
 
+    private static final String CREATE_EXPENSE_TABLE =
+            "CREATE TABLE IF NOT EXISTS Expense (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY," +
+                    "property_id INT NULL," +
+                    "unit_id INT NULL," +
+                    "description VARCHAR(255) NOT NULL," +
+                    "amount DECIMAL(10,2) NOT NULL," +
+                    "expense_date DATE NOT NULL," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY (property_id) REFERENCES Property(id) ON DELETE CASCADE," +
+                    "FOREIGN KEY (unit_id) REFERENCES Unit(id) ON DELETE CASCADE," +
+                    "CHECK ((property_id IS NOT NULL AND unit_id IS NULL) " +
+                    "OR (property_id IS NULL AND unit_id IS NOT NULL))" +
+                    ")";
+
+    private static final String CREATE_MAINTENANCE_REQUEST_TABLE =
+            "CREATE TABLE IF NOT EXISTS MaintenanceRequest (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY," +
+                    "property_id INT NULL," +
+                    "unit_id INT NULL," +
+                    "title VARCHAR(255) NOT NULL," +
+                    "description VARCHAR(500)," +
+                    "status VARCHAR(50) NOT NULL DEFAULT 'OPEN'," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY (property_id) REFERENCES Property(id) ON DELETE CASCADE," +
+                    "FOREIGN KEY (unit_id) REFERENCES Unit(id) ON DELETE CASCADE," +
+                    "CHECK ((property_id IS NOT NULL AND unit_id IS NULL) " +
+                    "OR (property_id IS NULL AND unit_id IS NOT NULL))" +
+                    ")";
+
     public static void initializeSchema() {
         try (Connection conn = ConnectionManager.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -88,6 +118,8 @@ public class SchemaCreation {
             stmt.execute(CREATE_TENANT_TABLE);
             stmt.execute(CREATE_LEASE_TABLE);
             stmt.execute(CREATE_PAYMENT_TABLE);
+            stmt.execute(CREATE_EXPENSE_TABLE);
+            stmt.execute(CREATE_MAINTENANCE_REQUEST_TABLE);
 
 
             System.out.println("Schema verified/created successfully.");
