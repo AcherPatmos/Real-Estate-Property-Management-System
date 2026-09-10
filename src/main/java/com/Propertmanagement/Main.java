@@ -1,16 +1,11 @@
 package com.Propertmanagement;
 
-import com.Propertmanagement.dao.BuildingDAO;
-import com.Propertmanagement.dao.FloorDAO;
-import com.Propertmanagement.dao.PropertyDAO;
-import com.Propertmanagement.dao.UnitDAO;
+import com.Propertmanagement.dao.*;
 import com.Propertmanagement.db.SchemaCreation;
-import com.Propertmanagement.model.Building;
-import com.Propertmanagement.model.Floor;
-import com.Propertmanagement.model.Property;
-import com.Propertmanagement.model.Unit;
+import com.Propertmanagement.model.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class
 
@@ -25,6 +20,8 @@ Main {
         BuildingDAO buildingDAO = new BuildingDAO();
         FloorDAO floorDAO = new FloorDAO();
         UnitDAO unitDAO = new UnitDAO();
+        leasedao leasedao = new leasedao();
+        TenantDAO TenantDAO = new TenantDAO();
 
         System.out.println("\n--- Step 2: CREATE across the full hierarchy ---");
         int propertyId = propertyDAO.createProperty(new Property("Riverside Apartments", "12 River Rd"));
@@ -39,11 +36,29 @@ Main {
         int unitId = unitDAO.createUnit(new Unit(floorId, "A1-01", "VACANT", new BigDecimal("450.00")));
         System.out.println("Created Unit id=" + unitId);
 
+        Tenant tenant = new Tenant("John", "Doe", "john@example.com", "0771234567");
+        int tenantId = TenantDAO.createTenant(tenant);
+        System.out.println("Created Tenant id=" + tenantId);
+
+        Lease lease = new Lease(
+                tenantId,
+                unitId,
+                LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 12, 31),
+                new BigDecimal("450.00"),
+                "ACTIVE"
+        );
+        int leaseId = leasedao.createLease(lease);
+        System.out.println("Created Lease id=" + leaseId);
+
+
         System.out.println("\n--- Step 3: READ each record back ---");
         System.out.println(propertyDAO.getPropertyById(propertyId));
         System.out.println(buildingDAO.getBuildingById(buildingId));
         System.out.println(floorDAO.getFloorById(floorId));
         System.out.println(unitDAO.getUnitById(unitId));
+        System.out.println(leasedao.getLeaseById(leaseId));
+        System.out.println(TenantDAO.getTenantById(tenantId));
 
         System.out.println("\n--- Step 4: UPDATE each record ---");
         Property property = propertyDAO.getPropertyById(propertyId);
