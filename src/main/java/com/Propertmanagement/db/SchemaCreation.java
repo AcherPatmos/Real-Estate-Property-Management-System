@@ -107,6 +107,19 @@ public class SchemaCreation {
                     "OR (property_id IS NULL AND unit_id IS NOT NULL))" +
                     ")";
 
+    private static final String CREATE_MAINTENANCE_TASK_TABLE =
+            "CREATE TABLE IF NOT EXISTS MaintenanceTask (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY," +
+                    "maintenance_request_id INT NOT NULL," +
+                    "parent_task_id INT NULL," +
+                    "title VARCHAR(255) NOT NULL," +
+                    "cost DECIMAL(10,2) NOT NULL DEFAULT 0," +
+                    "status VARCHAR(50) NOT NULL DEFAULT 'PENDING'," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY (maintenance_request_id) REFERENCES Maintenance_Request(id) ON DELETE CASCADE," +
+                    "FOREIGN KEY (parent_task_id) REFERENCES MaintenanceTask(id) ON DELETE CASCADE" +
+                    ")";
+
     public static void initializeSchema() {
         try (Connection conn = ConnectionManager.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -120,7 +133,7 @@ public class SchemaCreation {
             stmt.execute(CREATE_PAYMENT_TABLE);
             stmt.execute(CREATE_EXPENSE_TABLE);
             stmt.execute(CREATE_MAINTENANCE_REQUEST_TABLE);
-
+            stmt.execute(CREATE_MAINTENANCE_TASK_TABLE);
 
             System.out.println("Schema verified/created successfully.");
 
