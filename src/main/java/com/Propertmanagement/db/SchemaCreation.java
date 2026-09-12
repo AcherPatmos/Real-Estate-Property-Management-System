@@ -116,7 +116,7 @@ public class SchemaCreation {
                     "cost DECIMAL(10,2) NOT NULL DEFAULT 0," +
                     "status VARCHAR(50) NOT NULL DEFAULT 'PENDING'," +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                    "FOREIGN KEY (maintenance_request_id) REFERENCES Maintenance_Request(id) ON DELETE CASCADE," +
+                    "FOREIGN KEY (maintenance_request_id) REFERENCES MaintenanceRequest(id) ON DELETE CASCADE," +
                     "FOREIGN KEY (parent_task_id) REFERENCES MaintenanceTask(id) ON DELETE CASCADE" +
                     ")";
 
