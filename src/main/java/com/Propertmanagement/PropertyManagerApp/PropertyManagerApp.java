@@ -1,5 +1,15 @@
 package com.Propertmanagement.PropertyManagerApp;
 
+import com.Propertmanagement.dao.BuildingDAO;
+import com.Propertmanagement.dao.FloorDAO;
+import com.Propertmanagement.dao.PropertyDAO;
+import com.Propertmanagement.dao.UnitDAO;
+import com.Propertmanagement.gui.BuildingPanel;
+import com.Propertmanagement.gui.FloorPanel;
+import com.Propertmanagement.gui.HierarchyPanel;
+import com.Propertmanagement.gui.PropertyPanel;
+import com.Propertmanagement.gui.UnitPanel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -8,11 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 // PropertyManagerApp
-// Skeleton application shell:
-// 1. One main window (JFrame) that opens on launch.
-// 2. A sidebar of buttons for navigation.
-// 3. Placeholder screens swapped in/out via CardLayout.
-// No CRUD logic yet.
 
 public class PropertyManagerApp extends JFrame {
 
@@ -23,10 +28,17 @@ public class PropertyManagerApp extends JFrame {
             "Units",
             "Buildings",
             "Floors",
+            "Hierarchy",
             "Maintenance",
             "Tenants",
             "Leases"
     };
+
+    // Shared DAO instances handed to whichever screens need them.
+    private final PropertyDAO propertyDAO = new PropertyDAO();
+    private final BuildingDAO buildingDAO = new BuildingDAO();
+    private final FloorDAO floorDAO = new FloorDAO();
+    private final UnitDAO unitDAO = new UnitDAO();
 
     // Color palette
     private static final Color SIDEBAR_BG      = new Color(30, 42, 56);
@@ -139,12 +151,29 @@ public class PropertyManagerApp extends JFrame {
     // Screens (CardLayout deck)
     private JComponent buildScreens() {
         for (String section : SECTIONS) {
-            screenContainer.add(buildPlaceholderScreen(section), section);
+            screenContainer.add(buildScreen(section), section);
         }
         return screenContainer;
     }
 
-//  Blank placeholder screen for now
+    private JComponent buildScreen(String sectionName) {
+        switch (sectionName) {
+            case "Properties":
+                return new PropertyPanel(propertyDAO);
+            case "Units":
+                return new UnitPanel(unitDAO, floorDAO, buildingDAO, propertyDAO);
+            case "Buildings":
+                return new BuildingPanel(buildingDAO, propertyDAO);
+            case "Floors":
+                return new FloorPanel(floorDAO, buildingDAO, propertyDAO);
+            case "Hierarchy":
+                return new HierarchyPanel(propertyDAO, buildingDAO, floorDAO, unitDAO);
+            default:
+                return buildPlaceholderScreen(sectionName);
+        }
+    }
+
+//  Blank placeholder screen for sections not wired up yet
     private JPanel buildPlaceholderScreen(String sectionName) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
