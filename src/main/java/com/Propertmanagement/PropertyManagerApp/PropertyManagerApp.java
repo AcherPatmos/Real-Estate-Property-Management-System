@@ -1,14 +1,7 @@
 package com.Propertmanagement.PropertyManagerApp;
 
-import com.Propertmanagement.dao.BuildingDAO;
-import com.Propertmanagement.dao.FloorDAO;
-import com.Propertmanagement.dao.PropertyDAO;
-import com.Propertmanagement.dao.UnitDAO;
-import com.Propertmanagement.gui.BuildingPanel;
-import com.Propertmanagement.gui.FloorPanel;
-import com.Propertmanagement.gui.HierarchyPanel;
-import com.Propertmanagement.gui.PropertyPanel;
-import com.Propertmanagement.gui.UnitPanel;
+import com.Propertmanagement.dao.*;
+import com.Propertmanagement.gui.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -19,7 +12,9 @@ import java.util.Map;
 
 // PropertyManagerApp
 
-public class PropertyManagerApp extends JFrame {
+public class
+
+PropertyManagerApp extends JFrame {
 
     // Names of every section in the app. Add/remove entries here
     // and both the sidebar and the CardLayout deck update automatically.
@@ -39,6 +34,8 @@ public class PropertyManagerApp extends JFrame {
     private final BuildingDAO buildingDAO = new BuildingDAO();
     private final FloorDAO floorDAO = new FloorDAO();
     private final UnitDAO unitDAO = new UnitDAO();
+    private final TenantDAO tenantDAO = new TenantDAO();
+    private final leasedao LeaseDAO = new leasedao();
 
     // Color palette
     private static final Color SIDEBAR_BG      = new Color(30, 42, 56);
@@ -50,8 +47,10 @@ public class PropertyManagerApp extends JFrame {
 
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel screenContainer = new JPanel(cardLayout);
+
     private final Map<String, JButton> navButtons = new LinkedHashMap<>();
 
+    //setting up the window
     public PropertyManagerApp() {
         super("Property Manager");
 
@@ -71,7 +70,9 @@ public class PropertyManagerApp extends JFrame {
 
     // Sidebar
     private JComponent buildSidebar() {
+
         JPanel sidebar = new JPanel();
+
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBorder(new EmptyBorder(20, 14, 16, 14));
         sidebar.setBackground(SIDEBAR_BG);
@@ -168,6 +169,10 @@ public class PropertyManagerApp extends JFrame {
                 return new FloorPanel(floorDAO, buildingDAO, propertyDAO);
             case "Hierarchy":
                 return new HierarchyPanel(propertyDAO, buildingDAO, floorDAO, unitDAO);
+            case "Tenants":
+                return new TenantPanel(tenantDAO);
+            case "Lease":
+                return new LeasePanel(LeaseDAO, tenantDAO, unitDAO);
             default:
                 return buildPlaceholderScreen(sectionName);
         }
