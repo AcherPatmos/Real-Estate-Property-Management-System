@@ -40,6 +40,8 @@ PropertyManagerApp extends JFrame {
     private final leasedao LeaseDAO = new leasedao();
     private final PaymentDAO paymentDAO = new PaymentDAO();
     private final ExpenseDAO expenseDAO = new ExpenseDAO();
+    private final Maintenance_RequestDAO maintenanceRequestDAO = new Maintenance_RequestDAO();
+    private final MaintenanceTaskDAO maintenanceTaskDAO = new MaintenanceTaskDAO();
 
     // Color palette
     private static final Color SIDEBAR_BG      = new Color(30, 42, 56);
@@ -150,7 +152,7 @@ PropertyManagerApp extends JFrame {
             btn.setBackground(active ? NAV_ACTIVE_BG : SIDEBAR_BG);
             btn.setForeground(active ? NAV_TEXT_ACTIVE : NAV_TEXT);
         }
-        setTitle("Property Manager — " + section);
+        setTitle("Property Manager: " + section);
     }
 
     // Screens (CardLayout deck)
@@ -181,6 +183,9 @@ PropertyManagerApp extends JFrame {
                 return new PaymentPanel(paymentDAO, LeaseDAO);
             case "Expenses":
                 return new ExpensesPanel(expenseDAO, propertyDAO, unitDAO);
+            case "Maintenance":
+                return new MaintenancePanel(maintenanceRequestDAO, maintenanceTaskDAO,propertyDAO,unitDAO);
+
             default:
                 return buildPlaceholderScreen(sectionName);
         }
@@ -191,7 +196,7 @@ PropertyManagerApp extends JFrame {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
 
-        JLabel label = new JLabel(sectionName + " screen — coming soon");
+        JLabel label = new JLabel(sectionName + " error occured");
         label.setFont(label.getFont().deriveFont(Font.PLAIN, 20f));
         label.setForeground(new Color(120, 120, 120));
         panel.add(label);

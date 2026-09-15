@@ -221,7 +221,7 @@ public class TenantPanel extends JPanel {
                         emailResult.getValue(), phoneValue);
                 boolean ok = tenantDAO.updateTenant(updated);
                 if (!ok) {
-                    setStatus("This tenant no longer exists — it may have been deleted elsewhere.");
+                    setStatus("This tenant no longer exists, it may have been deleted elsewhere.");
                 }
             }
             clearForm();
