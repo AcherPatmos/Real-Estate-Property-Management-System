@@ -27,7 +27,8 @@ PropertyManagerApp extends JFrame {
             "Maintenance",
             "Tenants",
             "Leases",
-            "Payments"
+            "Payments",
+            "Expenses"
     };
 
     // Shared DAO instances handed to whichever screens need them.
@@ -38,6 +39,7 @@ PropertyManagerApp extends JFrame {
     private final TenantDAO tenantDAO = new TenantDAO();
     private final leasedao LeaseDAO = new leasedao();
     private final PaymentDAO paymentDAO = new PaymentDAO();
+    private final ExpenseDAO expenseDAO = new ExpenseDAO();
 
     // Color palette
     private static final Color SIDEBAR_BG      = new Color(30, 42, 56);
@@ -177,6 +179,8 @@ PropertyManagerApp extends JFrame {
                 return new LeasePanel(LeaseDAO, tenantDAO, unitDAO);
             case "Payments":
                 return new PaymentPanel(paymentDAO, LeaseDAO);
+            case "Expenses":
+                return new ExpensesPanel(expenseDAO, propertyDAO, unitDAO);
             default:
                 return buildPlaceholderScreen(sectionName);
         }
