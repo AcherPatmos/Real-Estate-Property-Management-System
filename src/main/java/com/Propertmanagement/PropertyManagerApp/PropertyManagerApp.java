@@ -26,7 +26,8 @@ PropertyManagerApp extends JFrame {
             "Hierarchy",
             "Maintenance",
             "Tenants",
-            "Leases"
+            "Leases",
+            "Payments"
     };
 
     // Shared DAO instances handed to whichever screens need them.
@@ -36,6 +37,7 @@ PropertyManagerApp extends JFrame {
     private final UnitDAO unitDAO = new UnitDAO();
     private final TenantDAO tenantDAO = new TenantDAO();
     private final leasedao LeaseDAO = new leasedao();
+    private final PaymentDAO paymentDAO = new PaymentDAO();
 
     // Color palette
     private static final Color SIDEBAR_BG      = new Color(30, 42, 56);
@@ -171,8 +173,10 @@ PropertyManagerApp extends JFrame {
                 return new HierarchyPanel(propertyDAO, buildingDAO, floorDAO, unitDAO);
             case "Tenants":
                 return new TenantPanel(tenantDAO);
-            case "Lease":
+            case "Leases":
                 return new LeasePanel(LeaseDAO, tenantDAO, unitDAO);
+            case "Payments":
+                return new PaymentPanel(paymentDAO, LeaseDAO);
             default:
                 return buildPlaceholderScreen(sectionName);
         }
