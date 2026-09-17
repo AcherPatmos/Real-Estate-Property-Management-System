@@ -1,14 +1,8 @@
 package com.Propertmanagement.gui;
 
-import com.Propertmanagement.dao.Maintenance_RequestDAO;
-import com.Propertmanagement.dao.MaintenanceTaskDAO;
-import com.Propertmanagement.dao.PropertyDAO;
-import com.Propertmanagement.dao.UnitDAO;
-import com.Propertmanagement.model.Maintenance_Request;
-import com.Propertmanagement.model.MaintenanceStats;
-import com.Propertmanagement.model.MaintenanceTask;
-import com.Propertmanagement.model.Property;
-import com.Propertmanagement.model.Unit;
+import com.Propertmanagement.dao.*;
+import com.Propertmanagement.factory.MaintenanceTaskFactory;
+import com.Propertmanagement.model.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -34,8 +28,9 @@ public class MaintenancePanel extends JPanel {
     private final MaintenanceTaskDAO taskDAO;
     private final PropertyDAO propertyDAO;
     private final UnitDAO unitDAO;
+    private final MaintenanceTaskFactory taskFactory;
 
-    // Request side (left)
+    // ---- Request side (left) ----
     private final JRadioButton propertyRadio = new JRadioButton("Property");
     private final JRadioButton unitRadio = new JRadioButton("Unit");
     private final JComboBox<PropertyOption> propertyCombo = new JComboBox<>();
@@ -54,13 +49,12 @@ public class MaintenancePanel extends JPanel {
     private final JButton requestDeleteButton = new JButton("Delete");
     private Integer editingRequestId = null;
 
-    // Task side (right)
+    // ---- Task side (right) ----
     private final DefaultMutableTreeNode treeRoot = new DefaultMutableTreeNode("Select a request");
     private final DefaultTreeModel treeModel = new DefaultTreeModel(treeRoot);
     private final JTree taskTree = new JTree(treeModel);
     private final JTextField taskTitleField = new JTextField();
     private final JTextField taskCostField = new JTextField();
-    private final JComboBox<String> taskStatusCombo = new JComboBox<>(new String[]{"PENDING", "COMPLETED"});
     private final JLabel taskTitleError = errorLabel();
     private final JLabel taskCostError = errorLabel();
     private final JLabel taskStatusLabel = new JLabel(" ");
@@ -72,12 +66,13 @@ public class MaintenancePanel extends JPanel {
     private Maintenance_Request selectedRequest = null;
 
     public MaintenancePanel(Maintenance_RequestDAO requestDAO, MaintenanceTaskDAO taskDAO,
-                            PropertyDAO propertyDAO, UnitDAO unitDAO) {
+                             PropertyDAO propertyDAO, UnitDAO unitDAO) {
         super(new BorderLayout(12, 12));
         this.requestDAO = requestDAO;
         this.taskDAO = taskDAO;
         this.propertyDAO = propertyDAO;
         this.unitDAO = unitDAO;
+        this.taskFactory = new MaintenanceTaskFactory(taskDAO);
 
         setBorder(new EmptyBorder(16, 16, 16, 16));
 
@@ -448,28 +443,20 @@ public class MaintenancePanel extends JPanel {
         gbc.gridy = 4;
         form.add(taskCostError, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.weightx = 0;
-        form.add(new JLabel("Status:"), gbc);
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        form.add(taskStatusCombo, gbc);
-
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttons.add(addTaskButton);
         buttons.add(deleteTaskButton);
         buttons.add(computeStatsButton);
         gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         form.add(buttons, gbc);
 
-        gbc.gridy = 7;
+        gbc.gridy = 6;
         taskStatusLabel.setForeground(new Color(178, 34, 34));
         form.add(taskStatusLabel, gbc);
 
-        gbc.gridy = 8;
+        gbc.gridy = 7;
         statsLabel.setForeground(new Color(30, 90, 30));
         form.add(statsLabel, gbc);
 
@@ -592,17 +579,21 @@ public class MaintenancePanel extends JPanel {
         }
 
         MaintenanceTask parent = getSelectedTask();
-        Integer parentTaskId = (parent == null) ? null : parent.getId();
-        String status = (String) taskStatusCombo.getSelectedItem();
 
         try {
-            MaintenanceTask newTask =
-                    new MaintenanceTask(selectedRequest.getId(), parentTaskId, title, cost, status);
+            // The factory decides which kind of task this is and builds it correctly -
+            // this panel no longer needs to know the construction rules (null parent
+            // for top-level, inherited maintenanceRequestId for subtasks) itself.
+            MaintenanceTask newTask = (parent == null)
+                    ? taskFactory.createTopLevelTask(selectedRequest.getId(), title, cost)
+                    : taskFactory.createSubtask(parent.getId(), title, cost);
+
             taskDAO.createTask(newTask);
             taskTitleField.setText("");
             taskCostField.setText("");
-            taskStatusCombo.setSelectedItem("PENDING");
             reloadTaskTree();
+        } catch (IllegalArgumentException e) {
+            setTaskStatus("Could not create task: " + e.getMessage());
         } catch (RuntimeException e) {
             setTaskStatus("Could not create task: " + rootMessage(e));
         }
