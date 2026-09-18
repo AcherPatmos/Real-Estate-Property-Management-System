@@ -2,6 +2,7 @@ package com.Propertmanagement.PropertyManagerApp;
 
 import com.Propertmanagement.dao.*;
 import com.Propertmanagement.gui.*;
+import com.Propertmanagement.service.PropertyHierarchyService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -42,6 +43,8 @@ PropertyManagerApp extends JFrame {
     private final ExpenseDAO expenseDAO = new ExpenseDAO();
     private final Maintenance_RequestDAO maintenanceRequestDAO = new Maintenance_RequestDAO();
     private final MaintenanceTaskDAO maintenanceTaskDAO = new MaintenanceTaskDAO();
+    private final PropertyHierarchyService hierarchyService =
+            new PropertyHierarchyService(buildingDAO, floorDAO, unitDAO, expenseDAO);
 
     // Color palette
     private static final Color SIDEBAR_BG      = new Color(30, 42, 56);
@@ -174,7 +177,7 @@ PropertyManagerApp extends JFrame {
             case "Floors":
                 return new FloorPanel(floorDAO, buildingDAO, propertyDAO);
             case "Hierarchy":
-                return new HierarchyPanel(propertyDAO, buildingDAO, floorDAO, unitDAO);
+                return new HierarchyPanel(propertyDAO, buildingDAO, floorDAO, unitDAO, hierarchyService);
             case "Tenants":
                 return new TenantPanel(tenantDAO);
             case "Leases":
