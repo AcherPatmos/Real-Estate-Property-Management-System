@@ -29,7 +29,7 @@ class LeaseDAOTest {
     private final FloorDAO floorDAO = new FloorDAO();
     private final UnitDAO unitDAO = new UnitDAO();
     private final TenantDAO tenantDAO = new TenantDAO();
-    private final LeaseDAO leaseDAO = new LeaseDAO();
+    private final leasedao leaseDAO = new leasedao();
 
     private int propertyId;
     private int unitId;
