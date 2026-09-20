@@ -1,6 +1,6 @@
 package com.Propertmanagement.dao;
 
-import com.Propertmanagement.model.MaintenanceRequest;
+import com.Propertmanagement.model.Maintenance_Request;
 import com.Propertmanagement.model.MaintenanceStats;
 import com.Propertmanagement.model.MaintenanceTask;
 import com.Propertmanagement.model.Property;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MaintenanceTaskDAOTest {
 
     private final PropertyDAO propertyDAO = new PropertyDAO();
-    private final MaintenanceRequestDAO requestDAO = new MaintenanceRequestDAO();
+    private final Maintenance_RequestDAO requestDAO = new Maintenance_RequestDAO();
     private final MaintenanceTaskDAO taskDAO = new MaintenanceTaskDAO();
 
     private int propertyId;
@@ -31,7 +31,7 @@ class MaintenanceTaskDAOTest {
     void setUp() {
         propertyId = propertyDAO.createProperty(new Property("Test Property", "1 Test St"));
         requestId = requestDAO.createRequest(
-                new MaintenanceRequest(propertyId, null, "Test Request", null, "OPEN"));
+                new Maintenance_Request(propertyId, null, "Test Request", null, "OPEN"));
     }
 
     @AfterEach
