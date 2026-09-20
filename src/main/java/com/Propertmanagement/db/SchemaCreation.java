@@ -120,20 +120,28 @@ public class SchemaCreation {
                     "FOREIGN KEY (parent_task_id) REFERENCES MaintenanceTask(id) ON DELETE CASCADE" +
                     ")";
 
-    public static void initializeSchema() {
-        try (Connection conn = ConnectionManager.getConnection();
-             Statement stmt = conn.createStatement()) {
 
-            stmt.execute(CREATE_PROPERTY_TABLE);
-            stmt.execute(CREATE_BUILDING_TABLE);
-            stmt.execute(CREATE_FLOOR_TABLE);
-            stmt.execute(CREATE_UNIT_TABLE);
-            stmt.execute(CREATE_TENANT_TABLE);
-            stmt.execute(CREATE_LEASE_TABLE);
-            stmt.execute(CREATE_PAYMENT_TABLE);
-            stmt.execute(CREATE_EXPENSE_TABLE);
-            stmt.execute(CREATE_MAINTENANCE_REQUEST_TABLE);
-            stmt.execute(CREATE_MAINTENANCE_TASK_TABLE);
+    public static void initializeSchema() throws SQLException {
+     try {
+        ConnectionManager.ensureDatabaseExists();
+     } catch (SQLException e) {
+        throw new RuntimeException(
+                "Could not create or reach the database named in db.properties.", e);
+     }
+
+     try (Connection conn = ConnectionManager.getConnection();
+         Statement stmt = conn.createStatement()) {
+
+        stmt.execute(CREATE_PROPERTY_TABLE);
+        stmt.execute(CREATE_BUILDING_TABLE);
+        stmt.execute(CREATE_FLOOR_TABLE);
+        stmt.execute(CREATE_UNIT_TABLE);
+        stmt.execute(CREATE_TENANT_TABLE);
+        stmt.execute(CREATE_LEASE_TABLE);
+        stmt.execute(CREATE_PAYMENT_TABLE);
+        stmt.execute(CREATE_EXPENSE_TABLE);
+        stmt.execute(CREATE_MAINTENANCE_REQUEST_TABLE);
+        stmt.execute(CREATE_MAINTENANCE_TASK_TABLE);
 
             System.out.println("Schema verified/created successfully.");
 
@@ -141,6 +149,5 @@ public class SchemaCreation {
             throw new RuntimeException("Failed to initialize database schema.", e);
         }
     }
-
 
 }

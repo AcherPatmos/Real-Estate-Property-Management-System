@@ -3,11 +3,13 @@ package com.Propertmanagement.PropertyManagerApp;
 import com.Propertmanagement.dao.*;
 import com.Propertmanagement.gui.*;
 import com.Propertmanagement.service.PropertyHierarchyService;
+import com.Propertmanagement.db.SchemaCreation;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -214,6 +216,23 @@ PropertyManagerApp extends JFrame {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {
             // Fall back to the default cross-platform L&F if this fails.
+        }
+
+        // Build the database and its tables before any screen is constructed.
+        try {
+            SchemaCreation.initializeSchema();
+        } catch (RuntimeException | SQLException e) {
+            // The database is unreachable or misconfigured; gets flagged on screen
+            String detail = e.getCause() == null ? e.getMessage() : e.getCause().getMessage();
+            JOptionPane.showMessageDialog(
+                    null,
+                    "The application could not reach its database.\n\n"
+                            + detail + "\n\n"
+                            + "Check that your MySQL server is running and that the\n"
+                            + "url, user and password in db.properties are correct.",
+                    "Database unavailable",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         SwingUtilities.invokeLater(() -> {
