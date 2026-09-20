@@ -47,12 +47,12 @@ PropertyManagerApp extends JFrame {
             new PropertyHierarchyService(buildingDAO, floorDAO, unitDAO, expenseDAO);
 
     // Color palette
-    private static final Color SIDEBAR_BG      = new Color(30, 42, 56);
+    private static final Color SIDEBAR_BG      = new Color(67, 54, 28);
     private static final Color SIDEBAR_TITLE   = new Color(255, 255, 255);
     private static final Color NAV_TEXT        = new Color(198, 210, 223);
     private static final Color NAV_TEXT_ACTIVE = Color.WHITE;
-    private static final Color NAV_ACTIVE_BG   = new Color(52, 120, 191);
-    private static final Color NAV_HOVER_BG    = new Color(44, 58, 75);
+    private static final Color NAV_ACTIVE_BG   = new Color(191, 135, 52);
+    private static final Color NAV_HOVER_BG    = new Color(83, 76, 32);
 
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel screenContainer = new JPanel(cardLayout);
