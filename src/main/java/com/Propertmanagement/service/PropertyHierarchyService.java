@@ -13,29 +13,10 @@ import com.Propertmanagement.model.Unit;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * THE RECURSIVE FEATURE for the Property hierarchy.
- * Walks Property -> Building -> Floor -> Unit and folds unit counts,
- * occupancy, rental income, and expenses back up into one HierarchyStats.
- *
- * Unlike MaintenanceTaskDAO.computeStats() (which recurses through ONE
- * self-referencing table), this hierarchy spans four separate tables, so
- * the recursion here is MUTUAL RECURSION across four methods - one per
- * level - each level's method fetching its children from the right DAO
- * and calling the next level's method. computeUnitStats() is the base
- * case: a Unit is a leaf, it never recurses further.
- *
- * This is a new, standalone class - it only calls existing DAOs through
- * their public methods and does not modify PropertyDAO, BuildingDAO,
- * FloorDAO, UnitDAO, or ExpenseDAO in any way.
- *
- * ASSUMPTION worth confirming: "rental income" here means the rent_amount
- * of currently OCCUPIED units (projected income), not a sum of actual
- * Payment records received. If the project wants realized payments
- * instead, this class would need a PaymentDAO/LeaseDAO dependency added
- * to walk Unit -> Lease -> Payment instead of reading Unit.rentAmount
- * directly.
- */
+//  THE RECURSIVE FEATURE for the Property hierarchy.
+//  Walks Property -> Building -> Floor -> Unit and folds unit counts,
+//  occupancy, rental income, and expenses back up into one HierarchyStats.
+
 public class PropertyHierarchyService {
 
     private final BuildingDAO buildingDAO;
@@ -87,7 +68,7 @@ public class PropertyHierarchyService {
         return combined;
     }
 
-    // BASE CASE: a Unit is a leaf in this hierarchy - it never recurses further.
+    // BASE CASE: a Unit is a leaf in this hierarchy; it never recurses further.
     // Its own contribution is: itself counted once, its rent if occupied, and
     // any Expense rows attached directly to it.
     private HierarchyStats computeUnitStats(Unit unit) {

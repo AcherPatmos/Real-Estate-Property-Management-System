@@ -2,7 +2,6 @@ package com.Propertmanagement.dao;
 
 import com.Propertmanagement.db.ConnectionManager;
 import com.Propertmanagement.model.Maintenance_Request;
-import com.Propertmanagement.model.Maintenance_Request;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +17,7 @@ public class Maintenance_RequestDAO {
     public int createRequest(Maintenance_Request request) {
         validateExactlyOneOwner(request);
 
-        String sql = "INSERT INTO Maintenance_Request (property_id, unit_id, title, description, status) "
+        String sql = "INSERT INTO MaintenanceRequest (property_id, unit_id, title, description, status) "
                 + "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionManager.getConnection();
@@ -45,7 +44,7 @@ public class Maintenance_RequestDAO {
 
     public Maintenance_Request getRequestById(int id) {
         String sql = "SELECT id, property_id, unit_id, title, description, status "
-                + "FROM Maintenance_Request WHERE id = ?";
+                + "FROM MaintenanceRequest WHERE id = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -66,7 +65,7 @@ public class Maintenance_RequestDAO {
 
     public List<Maintenance_Request> getRequestsByPropertyId(int propertyId) {
         String sql = "SELECT id, property_id, unit_id, title, description, status "
-                + "FROM Maintenance_Request WHERE property_id = ? ORDER BY id";
+                + "FROM MaintenanceRequest WHERE property_id = ? ORDER BY id";
         List<Maintenance_Request> requests = new ArrayList<>();
 
         try (Connection conn = ConnectionManager.getConnection();
@@ -88,7 +87,7 @@ public class Maintenance_RequestDAO {
 
     public List<Maintenance_Request> getRequestsByUnitId(int unitId) {
         String sql = "SELECT id, property_id, unit_id, title, description, status "
-                + "FROM Maintenance_Request WHERE unit_id = ? ORDER BY id";
+                + "FROM MaintenanceRequest WHERE unit_id = ? ORDER BY id";
         List<Maintenance_Request> requests = new ArrayList<>();
 
         try (Connection conn = ConnectionManager.getConnection();
@@ -110,7 +109,7 @@ public class Maintenance_RequestDAO {
 
     public List<Maintenance_Request> getAllRequests() {
         String sql = "SELECT id, property_id, unit_id, title, description, status "
-                + "FROM Maintenance_Request ORDER BY id";
+                + "FROM MaintenanceRequest ORDER BY id";
         List<Maintenance_Request> requests = new ArrayList<>();
 
         try (Connection conn = ConnectionManager.getConnection();
@@ -130,7 +129,7 @@ public class Maintenance_RequestDAO {
     public boolean updateRequest(Maintenance_Request request) {
         validateExactlyOneOwner(request);
 
-        String sql = "UPDATE Maintenance_Request SET property_id = ?, unit_id = ?, title = ?, "
+        String sql = "UPDATE MaintenanceRequest SET property_id = ?, unit_id = ?, title = ?, "
                 + "description = ?, status = ? WHERE id = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
@@ -153,7 +152,7 @@ public class Maintenance_RequestDAO {
     public boolean deleteRequest(int id) {
         // MaintenanceTask rows under this request are removed automatically
         // by ON DELETE CASCADE once MaintenanceTask's FK to this table is added.
-        String sql = "DELETE FROM Maintenance_Request WHERE id = ?";
+        String sql = "DELETE FROM MaintenanceRequest WHERE id = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
