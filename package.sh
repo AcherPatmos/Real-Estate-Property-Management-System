@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Builds the self-contained application: a folder holding PropertyManagement.exe,
-# its own private copy of Java, and the app's settings file plus a zip of it.
+# its own private copy of Java, and the app's settings file - plus a zip of it.
 # The machine that runs the result needs no Java installed.
 #
 # Run from the project root, in Git Bash:
@@ -22,7 +22,7 @@ OUTPUT="target/installer"
 
 cd "$(dirname "$0")"
 
-# --- 1. Build and test the fat jar ------------------------------------------
+# 1. Build and test the fat jar
 if command -v mvn >/dev/null 2>&1; then MVN=mvn; else MVN=./mvnw; fi
 echo ">> Building with $MVN (this runs the test suite too)"
 "$MVN" -q clean package
@@ -35,7 +35,7 @@ if [ "${#jars[@]}" -ne 1 ]; then
 fi
 JAR_NAME="$(basename "${jars[0]}")"
 
-#  Stage: only what belongs inside the app
+# 2. Stage: only what belongs inside the app
 # Pointing jpackage at target/ itself would copy classes/, test reports and the
 # plain jar into the app as well. A clean folder with two files avoids that.
 echo ">> Staging $JAR_NAME and a settings template"
@@ -44,23 +44,40 @@ mkdir -p "$STAGING"
 cp "target/$JAR_NAME" "$STAGING/"
 cp src/main/resources/db.properties.example "$STAGING/db.properties"
 
-# 3. Find jpackage (it ships with the JDK, next to java)
-if [ -n "${JAVA_HOME:-}" ]; then
-    # Git Bash: turn C:\Program Files\... into /c/Program Files/...
-    if command -v cygpath >/dev/null 2>&1; then JAVA_HOME="$(cygpath -u "$JAVA_HOME")"; fi
-    JPACKAGE="$JAVA_HOME/bin/jpackage"
-else
+# 3. Find jpackage (it ships with the JDK, in the same bin folder as java)
+# Use the JDK that Maven just compiled with, so the Java bundled into the app is
+# the same version the code was built for. Asking Maven works even when
+# JAVA_HOME is unset: on Windows, PATH often holds only a shortcut folder
+# (...\Oracle\Java\javapath) with java.exe in it but not jpackage.exe.
+
+# Git Bash: turn C:\Program Files\... into /c/Program Files/...
+to_unix() {
+    if command -v cygpath >/dev/null 2>&1; then cygpath -u "$1"; else printf '%s\n' "$1"; fi
+}
+
+JPACKAGE=""
+jdk="$("$MVN" -version 2>/dev/null | sed -n 's/.*runtime: //p' | tr -d '\r')"
+if [ -n "$jdk" ] && "$(to_unix "$jdk")/bin/jpackage" --version >/dev/null 2>&1; then
+    JPACKAGE="$(to_unix "$jdk")/bin/jpackage"
+elif [ -n "${JAVA_HOME:-}" ] && "$(to_unix "$JAVA_HOME")/bin/jpackage" --version >/dev/null 2>&1; then
+    JPACKAGE="$(to_unix "$JAVA_HOME")/bin/jpackage"
+elif jpackage --version >/dev/null 2>&1; then
     JPACKAGE=jpackage
 fi
-if ! "$JPACKAGE" --version >/dev/null 2>&1; then
-    echo "!! Could not run jpackage. Set JAVA_HOME to your JDK folder, or put its bin folder on PATH." >&2
+
+if [ -z "$JPACKAGE" ]; then
+    echo "!! Could not find jpackage. It comes with the JDK (version 14 or newer)." >&2
+    echo "   Maven reports its JDK as: ${jdk:-<nothing - run '$MVN -version' to see why>}" >&2
+    echo "   If that folder has no bin/jpackage.exe, it is not a full JDK." >&2
     exit 1
 fi
+echo ">> Using $JPACKAGE"
 
 extra=()
 if [ "${1:-}" = "--console" ]; then extra+=(--win-console); fi
 
-#  4. Package
+# 4.Package
+# $APPDIR is in single quotes on purpose: it must reach jpackage as literal text.
 # The launcher replaces it at run time with the app's own folder, so the app
 # always reads the db.properties that sits inside it, wherever it is launched from.
 echo ">> Running jpackage (takes a minute: it assembles a private Java runtime)"
@@ -74,7 +91,7 @@ echo ">> Running jpackage (takes a minute: it assembles a private Java runtime)"
     --java-options '-Ddb.config=$APPDIR/db.properties' \
     "${extra[@]+"${extra[@]}"}"
 
-# Zip it: the folder is the deliverable, not the .exe alone
+# 5. Zip it: the folder is the deliverable, not the .exe alone
 # (The jar tool writes ordinary zip files, and every JDK has one.)
 ZIP="target/$APP_NAME-windows.zip"
 "$(dirname "$JPACKAGE")/jar" cMf "$ZIP" -C "$OUTPUT" "$APP_NAME" 2>/dev/null \
