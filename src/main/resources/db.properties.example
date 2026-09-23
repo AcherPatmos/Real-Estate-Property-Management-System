@@ -1,3 +1,3 @@
-db.url=jdbc:mysql://localhost:3306/propertymanagement?useSSL=false&serverTimezone=UTC
+db.url=jdbc:mysql://localhost:3306/propertymanagement?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 db.user=your_username_here
 db.password=your_password_here
