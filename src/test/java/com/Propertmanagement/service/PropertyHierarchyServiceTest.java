@@ -5,6 +5,7 @@ import com.Propertmanagement.dao.ExpenseDAO;
 import com.Propertmanagement.dao.FloorDAO;
 import com.Propertmanagement.dao.PropertyDAO;
 import com.Propertmanagement.dao.UnitDAO;
+import com.Propertmanagement.db.SchemaCreation;
 import com.Propertmanagement.model.Building;
 import com.Propertmanagement.model.Expense;
 import com.Propertmanagement.model.Floor;
@@ -12,10 +13,12 @@ import com.Propertmanagement.model.HierarchyStats;
 import com.Propertmanagement.model.Property;
 import com.Propertmanagement.model.Unit;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,6 +32,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 // each test deletes the Property it created afterward, which cascades
 // down through Building -> Floor -> Unit -> Expense automatically.
 class PropertyHierarchyServiceTest {
+
+    // The tests may run before the app has ever been launched on this machine,
+    // so create the database and its tables first, exactly as the app does.
+    @BeforeAll
+    static void createSchema() throws SQLException {
+        SchemaCreation.initializeSchema();
+    }
 
     private final PropertyDAO propertyDAO = new PropertyDAO();
     private final BuildingDAO buildingDAO = new BuildingDAO();

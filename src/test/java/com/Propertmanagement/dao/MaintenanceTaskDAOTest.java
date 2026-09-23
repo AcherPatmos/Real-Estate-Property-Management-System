@@ -1,14 +1,17 @@
 package com.Propertmanagement.dao;
 
+import com.Propertmanagement.db.SchemaCreation;
 import com.Propertmanagement.model.Maintenance_Request;
 import com.Propertmanagement.model.MaintenanceStats;
 import com.Propertmanagement.model.MaintenanceTask;
 import com.Propertmanagement.model.Property;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,6 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 // deleting the Property it created, which cascades down through
 // MaintenanceRequest -> MaintenanceTask -> subtasks automatically.
 class MaintenanceTaskDAOTest {
+
+    // The tests may run before the app has ever been launched on this machine,
+    // so create the database and its tables first, exactly as the app does.
+    @BeforeAll
+    static void createSchema() throws SQLException {
+        SchemaCreation.initializeSchema();
+    }
 
     private final PropertyDAO propertyDAO = new PropertyDAO();
     private final Maintenance_RequestDAO requestDAO = new Maintenance_RequestDAO();

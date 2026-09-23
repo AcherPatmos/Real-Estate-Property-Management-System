@@ -1,5 +1,6 @@
 package com.Propertmanagement.dao;
 
+import com.Propertmanagement.db.SchemaCreation;
 import com.Propertmanagement.model.Building;
 import com.Propertmanagement.model.Floor;
 import com.Propertmanagement.model.Lease;
@@ -7,10 +8,12 @@ import com.Propertmanagement.model.Property;
 import com.Propertmanagement.model.Tenant;
 import com.Propertmanagement.model.Unit;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,6 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 // test builds its own Property->Building->Floor->Unit chain and Tenant,
 // then deletes the Property (cascades down) and the Tenant afterward.
 class LeaseDAOTest {
+
+    // The tests may run before the app has ever been launched on this machine,
+    // so create the database and its tables first, exactly as the app does.
+    @BeforeAll
+    static void createSchema() throws SQLException {
+        SchemaCreation.initializeSchema();
+    }
 
     private final PropertyDAO propertyDAO = new PropertyDAO();
     private final BuildingDAO buildingDAO = new BuildingDAO();
