@@ -4,6 +4,7 @@ import com.Propertmanagement.dao.*;
 import com.Propertmanagement.gui.*;
 import com.Propertmanagement.service.PropertyHierarchyService;
 import com.Propertmanagement.db.SchemaCreation;
+import com.Propertmanagement.db.SeedData;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -146,7 +147,7 @@ PropertyManagerApp extends JFrame {
 
     private String currentSection = null;
 
-//  Updates which screen is showing and highlights the active nav button
+    //  Updates which screen is showing and highlights the active nav button
     private void selectSection(String section) {
         currentSection = section;
         cardLayout.show(screenContainer, section);
@@ -196,7 +197,7 @@ PropertyManagerApp extends JFrame {
         }
     }
 
-//  Blank placeholder screen for sections not wired up yet
+    //  Blank placeholder screen for sections not wired up yet
     private JPanel buildPlaceholderScreen(String sectionName) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
@@ -233,6 +234,20 @@ PropertyManagerApp extends JFrame {
                     "Database unavailable",
                     JOptionPane.ERROR_MESSAGE);
             return;
+        }
+
+        // On a brand-new database, add demo records so every screen has data to show.
+        // A failure here is reported but does not stop the app from opening.
+        try {
+            SeedData.seedIfEmpty();
+        } catch (RuntimeException e) {
+            String detail = e.getCause() == null ? e.getMessage() : e.getCause().getMessage();
+            JOptionPane.showMessageDialog(
+                    null,
+                    "The demo data could not be fully loaded.\n\n" + detail + "\n\n"
+                            + "The application will open, but some screens may be empty.",
+                    "Demo data not loaded",
+                    JOptionPane.WARNING_MESSAGE);
         }
 
         SwingUtilities.invokeLater(() -> {
