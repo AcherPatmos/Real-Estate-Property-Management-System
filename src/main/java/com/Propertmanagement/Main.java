@@ -5,13 +5,14 @@ import com.Propertmanagement.db.SchemaCreation;
 import com.Propertmanagement.model.*;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class
 
 Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
         System.out.println("--- Step 1: Initializing schema ---");
         SchemaCreation.initializeSchema();
