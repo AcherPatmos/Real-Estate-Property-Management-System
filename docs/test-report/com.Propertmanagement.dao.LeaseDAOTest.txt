@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.Propertmanagement.dao.LeaseDAOTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.060 s -- in com.Propertmanagement.dao.LeaseDAOTest
